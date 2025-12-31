@@ -1,0 +1,19 @@
+date,category,amount,description,type
+2024-05-01,Salary,70000,Monthly Salary,credit
+2024-05-03,Groceries,4500,Weekly grocery run,debit
+2024-05-05,Rent,25000,Monthly Rent Payment,debit
+2024-05-07,Dining,1200,Dinner with friends at a cafe,debit
+2024-05-10,Utilities,3000,Electricity and Water Bill,debit
+2024-05-12,Shopping,5000,New headphones,debit
+2024-05-15,Freelance,15000,Payment for project X,credit
+2024-05-18,Transport,800,Metro card recharge,debit
+2024-05-20,Health,2500,Pharmacy and supplements,debit
+2024-05-22,Entertainment,1500,Movie tickets and snacks,debit
+2024-05-25,Dining,2000,Weekend family dinner,debit
+2024-06-01,Salary,70000,Monthly Salary,credit
+2024-06-03,Groceries,4800,Weekly grocery run,debit
+2024-06-05,Rent,25000,Monthly Rent Payment,debit
+2024-06-08,Travel,12000,Weekend trip flight tickets,debit
+2024-06-11,Shopping,3500,Birthday gift purchase,debit
+2024-06-15,Utilities,3200,Electricity and Water Bill,debit
+2024-06-20,Freelance,20000,Payment for project Y,credit
