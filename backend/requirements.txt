@@ -2,7 +2,9 @@ fastapi==0.115.5
 uvicorn[standard]==0.34.0
 pandas==2.2.3
 python-dotenv==1.0.1
-faiss-cpu
-sentence-transformers
-numpy
+faiss-cpu==1.7.4
+sentence-transformers==2.7.0
+numpy<2.0.0
 openai
+torch==2.0.1
+--extra-index-url https://download.pytorch.org/whl/cpu
