@@ -2,12 +2,8 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 import pandas as pd
-import faiss
-import time
 import json
 import os
-from sentence_transformers import SentenceTransformer
-import numpy as np
 from openai import OpenAI
 from dotenv import load_dotenv
 
@@ -28,28 +24,20 @@ app.add_middleware(
 )
 
 # ---------------------------
-# Load Embedding Model & OpenAI Client
+# OpenAI Client & Load Data
 # ---------------------------
-embed_model = SentenceTransformer("all-MiniLM-L6-v2")
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-# ---------------------------
-# Load CSV + Build Vector DB
-# ---------------------------
+# Load CSV data
 backend_dir = os.path.dirname(os.path.abspath(__file__))
 csv_path = os.path.join(backend_dir, "sample_transactions.csv")
 df = pd.read_csv(csv_path)
 
+# Create simple context from transactions
 documents = [
     f"On {row.date}, spent ₹{row.amount} on {row.description} under {row.category}"
     for _, row in df.iterrows()
 ]
-
-embeddings = embed_model.encode(documents)
-dimension = embeddings.shape[1]
-
-index = faiss.IndexFlatL2(dimension)
-index.add(np.array(embeddings))
 
 # ---------------------------
 # Health Check
@@ -68,13 +56,10 @@ async def ask(request: Request):
     user_query = messages[-1]["content"]
 
     # ---------------------------
-    # Retrieve Relevant Context
+    # Get Recent Transactions as Context
     # ---------------------------
-    query_embedding = embed_model.encode([user_query])
-    _, indices = index.search(np.array(query_embedding), k=3)
-
-    retrieved_chunks = [documents[i] for i in indices[0]]
-    context = "\n".join(retrieved_chunks)
+    # Just use recent transactions instead of RAG
+    context = "\n".join(documents[:10])  # First 10 transactions
 
     # ---------------------------
     # OpenAI LLM Response with Streaming
