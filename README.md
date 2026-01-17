@@ -99,13 +99,12 @@ VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_key
 2. Set environment variables
 3. Use start command: `uvicorn main:app --host 0.0.0.0 --port $PORT --app-dir backend`
 
-## Contributing
-
-Built with assistance from [Warp AI](https://warp.dev) 🚀
 
 ## License
 
-MIT
+This project is intended for educational and portfolio purposes.
+
+
 
 ## Acknowledgments
 
