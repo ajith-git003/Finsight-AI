@@ -1,113 +1,104 @@
-# Insightful Finance Buddy 💰
+# FinSight AI 💰
 
-An AI-powered personal finance assistant that helps you manage expenses, track spending, and get intelligent financial advice.
+FinSight AI is an AI-powered personal finance assistant designed to help users
+understand spending patterns, track savings goals, and receive actionable
+financial insights using real transaction data.
 
-## Features
+This project focuses on building a **controlled, backend-driven AI system**
+rather than a prompt-only demo.
 
-- 📊 **Expense Tracking**: Upload and visualize your financial transactions
-- 🤖 **AI Assistant**: Get personalized financial advice powered by OpenAI GPT-4
-- 📈 **Interactive Dashboard**: Beautiful charts and analytics
-- 🔍 **RAG-Powered Insights**: Vector search through your transaction history
-- 💡 **Smart Recommendations**: Actionable suggestions to save money
+---
 
-## Tech Stack
+## 🔍 What This Project Solves
+
+Managing personal finances is difficult when spending data is scattered
+and insights are unclear.
+
+FinSight AI helps users:
+- Upload transaction data
+- Understand where money is being spent
+- Ask natural language questions about finances
+- Receive structured, personalized recommendations
+
+---
+
+## ✨ Key Features
+
+- 📊 **Expense Analysis**
+  - Upload transaction data
+  - Automatic categorization (rent, food, groceries, transport, etc.)
+
+- 🤖 **AI Financial Assistant**
+  - Natural language queries (e.g. *What is my biggest expense?*)
+  - Structured breakdowns with recommendations
+  - Context-aware responses based on actual data
+
+- 🎯 **Savings Goal Tracking**
+  - Create, update, and delete savings goals
+  - Monitor progress in real time
+
+- 🌗 **User Experience**
+  - Clean dashboard
+  - Light & dark mode support
+
+---
+
+## 🧠 System Design 
+
+1. User uploads transaction data
+2. Backend preprocesses and structures the data
+3. Structured context is passed to the AI model
+4. AI generates insights and recommendations
+5. Responses are streamed back to the frontend in real time
+
+The AI is treated as a **controlled system component**, not a black box.
+
+---
+
+## 📁 Project Structure 
+
+frontend/        # User interface and visualizations
+backend/         # API, data processing, and AI logic
+docs/            # Architecture and setup documentation
+
+
+## 🧩 Tech Stack
 
 ### Frontend
 - React + TypeScript
-- Vite
-- TailwindCSS + shadcn/ui
-- Recharts for visualizations
-- React Query for data fetching
+- Tailwind CSS
+- Recharts
+- Deployed on **Vercel**
 
 ### Backend
 - FastAPI (Python)
-- OpenAI GPT-4o-mini
-- FAISS for vector search
-- Sentence Transformers for embeddings
+- OpenAI (GPT-4o-mini)
 - Server-Sent Events (SSE) for streaming responses
+- Deployed on **Render**
 
-## Getting Started
+---
 
-### Prerequisites
-- Python 3.11+
-- Node.js 18+
-- OpenAI API key
+## 🚀 Deployment
 
-### Installation
+- Frontend hosted on **Vercel**
+- Backend hosted on **Render**
+- API keys managed securely using environment variables
 
-1. **Clone the repository**
-```bash
-git clone https://github.com/ajith-git003/insightful-finance-buddy.git
-cd insightful-finance-buddy
-```
+Live Demo:
+👉 https://finsight-ai-i.vercel.app/
 
-2. **Backend Setup**
-```bash
-cd backend
-pip install -r requirements.txt
+---
 
-# Create .env file
-echo "OPENAI_API_KEY=your_api_key_here" > .env
-```
+## 🎯 Purpose
 
-3. **Frontend Setup**
-```bash
-cd frontend/insightful-finance-buddy-main
-npm install
-```
+This project was built as part of my AI engineering portfolio to demonstrate:
+- End-to-end AI system design
+- Backend-controlled AI workflows
+- Real-world data handling
+- Full-stack deployment ownership
 
-### Running Locally
+---
 
-1. **Start Backend** (in one terminal)
-```bash
-cd AIMLproject
-python -m uvicorn main:app --host 0.0.0.0 --port 8000 --app-dir backend
-```
-
-2. **Start Frontend** (in another terminal)
-```bash
-cd frontend/insightful-finance-buddy-main
-npm run dev
-```
-
-3. **Open** `http://localhost:8080`
-
-## Environment Variables
-
-### Backend (.env)
-```env
-OPENAI_API_KEY=your_openai_api_key
-```
-
-### Frontend (.env)
-```env
-VITE_BACKEND_URL=http://localhost:8000
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_key
-```
-
-## Deployment
-
-### Vercel (Frontend)
-1. Push code to GitHub
-2. Import project in Vercel
-3. Set environment variables
-4. Deploy
-
-### Render/Railway (Backend)
-1. Connect GitHub repository
-2. Set environment variables
-3. Use start command: `uvicorn main:app --host 0.0.0.0 --port $PORT --app-dir backend`
-
-
-## License
+## 📜 License
 
 This project is intended for educational and portfolio purposes.
-
-
-
-## Acknowledgments
-
-- Frontend design inspired by Lovable
-- Backend developed with Google IDX
-- AI assistance provided by Warp
