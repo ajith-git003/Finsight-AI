@@ -1,10 +1,13 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Body
+from pydantic import BaseModel
+from typing import List
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 import pandas as pd
 import json
 import os
 from openai import OpenAI
+from rag_engine import TransactionRAG
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -13,6 +16,16 @@ load_dotenv()
 # ---------------------------
 # App Init
 # ---------------------------
+# ---------------------------
+# Pydantic Models
+# ---------------------------
+class Message(BaseModel):
+    role: str
+    content: str
+
+class AskRequest(BaseModel):
+    messages: List[Message]
+
 app = FastAPI()
 
 app.add_middleware(
@@ -28,16 +41,11 @@ app.add_middleware(
 # ---------------------------
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-# Load CSV data
-backend_dir = os.path.dirname(os.path.abspath(__file__))
-csv_path = os.path.join(backend_dir, "sample_transactions.csv")
-df = pd.read_csv(csv_path)
-
-# Create simple context from transactions
-documents = [
-    f"On {row.date}, spent ₹{row.amount} on {row.description} under {row.category}"
-    for _, row in df.iterrows()
-]
+# ---------------------------
+# Initialize RAG System
+# ---------------------------
+rag_system = TransactionRAG()
+# documents = ... (removed legacy static loading)
 
 # ---------------------------
 # Health Check
@@ -47,19 +55,22 @@ def health():
     return {"status": "Insightful Finance Buddy RAG backend running"}
 
 # ---------------------------
-# RAG CHAT ENDPOINT (Lovable Compatible)
+# RAG CHAT ENDPOINT 
 # ---------------------------
 @app.post("/api/ask")
-async def ask(request: Request):
-    body = await request.json()
-    messages = body.get("messages", [])
-    user_query = messages[-1]["content"]
+async def ask(payload: AskRequest = Body(...)):
+    messages = payload.messages
+    # Safely get the last user message content
+    if not messages:
+        return {"error": "No messages provided"}
+    
+    user_query = messages[-1].content
 
     # ---------------------------
-    # Get Recent Transactions as Context
+    # Retrieve Context via RAG
     # ---------------------------
-    # Just use recent transactions instead of RAG
-    context = "\n".join(documents[:10])  # First 10 transactions
+    # Uses vector search to find most relevant transactions
+    context = rag_system.retrieve_context(user_query)
 
     # ---------------------------
     # OpenAI LLM Response with Streaming
@@ -75,7 +86,8 @@ Analyze the user's transaction data and provide detailed, actionable recommendat
 - Use bullet points with dashes or numbers instead of tables
 - Be encouraging and motivational
 
-Relevant transaction records:
+
+Retrieved relevant transactions:
 {context}
 
 IMPORTANT: Do NOT use markdown table syntax (pipes |). Instead, use bullet points and clear formatting with emojis and bold text.

@@ -35,11 +35,19 @@ const AIChat = () => {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isParsingCSV, setIsParsingCSV] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (scrollRef.current) {
+      const { scrollHeight, clientHeight, scrollTop } = scrollRef.current;
+      const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
+
+      // Only auto-scroll if the user is near the bottom to avoid locking them
+      if (isNearBottom) {
+        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      }
+    }
   };
 
   useEffect(() => {
@@ -67,7 +75,7 @@ const AIChat = () => {
       complete: (results) => {
         const headers = results.meta.fields || [];
         const rows = results.data as Record<string, string>[];
-        
+
         setCsvData({
           headers,
           rows,
@@ -75,7 +83,7 @@ const AIChat = () => {
         });
 
         setIsParsingCSV(false);
-        
+
         toast({
           title: "File uploaded successfully",
           description: `Loaded ${rows.length} transactions from ${file.name}`,
@@ -135,22 +143,8 @@ const AIChat = () => {
       content,
     }));
 
-    // If CSV data exists, append it as system context to the last user message
-    if (csvData && apiMessages.length > 0) {
-      const lastIndex = apiMessages.length - 1;
-      const contextData = JSON.stringify({
-        summary: {
-          totalTransactions: csvData.rows.length,
-          columns: csvData.headers,
-        },
-        transactions: csvData.rows.slice(0, 100), // Limit to 100 rows to avoid token limits
-      });
-      
-      apiMessages[lastIndex] = {
-        ...apiMessages[lastIndex],
-        content: `${apiMessages[lastIndex].content}\n\n[SYSTEM CONTEXT - User's Expense Data]:\n${contextData}`,
-      };
-    }
+    // CSV Context injection removed to support RAG architecture
+    // Context is now retrieved by the backend using embeddings and FAISS
 
     let assistantContent = "";
 
@@ -165,7 +159,7 @@ const AIChat = () => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        
+
         if (response.status === 429) {
           toast({
             title: "Rate limit exceeded",
@@ -175,7 +169,7 @@ const AIChat = () => {
           setIsLoading(false);
           return;
         }
-        
+
         if (response.status === 402) {
           toast({
             title: "Usage limit reached",
@@ -185,7 +179,7 @@ const AIChat = () => {
           setIsLoading(false);
           return;
         }
-        
+
         throw new Error(errorData.error || "Failed to get response");
       }
 
@@ -332,7 +326,7 @@ const AIChat = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 {/* CSV Status Badge */}
                 {csvData && (
                   <motion.div
@@ -354,7 +348,10 @@ const AIChat = () => {
             </div>
 
             {/* Messages */}
-            <div className="h-96 overflow-y-auto p-6 space-y-4">
+            <div
+              ref={scrollRef}
+              className="h-96 overflow-y-auto p-6 space-y-4 scroll-smooth"
+            >
               <AnimatePresence>
                 {messages.map((message) => (
                   <motion.div
@@ -370,11 +367,10 @@ const AIChat = () => {
                       </div>
                     )}
                     <div
-                      className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-                        message.role === "user"
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted text-foreground"
-                      }`}
+                      className={`max-w-[80%] rounded-2xl px-4 py-3 ${message.role === "user"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-foreground"
+                        }`}
                     >
                       {message.role === "assistant" ? (
                         <div className="text-sm prose prose-sm max-w-none dark:prose-invert prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-li:my-0">
@@ -420,7 +416,7 @@ const AIChat = () => {
                   </div>
                 </motion.div>
               )}
-              <div ref={messagesEndRef} />
+              <div />
             </div>
 
             {/* Suggested Questions */}
@@ -450,7 +446,7 @@ const AIChat = () => {
                   accept=".csv"
                   className="hidden"
                 />
-                
+
                 {/* Upload button */}
                 <Button
                   variant="outline"
