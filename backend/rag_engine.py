@@ -1,5 +1,7 @@
 import os
 import pandas as pd
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_core.documents import Document
@@ -52,15 +54,18 @@ class TransactionRAG:
         self.vector_store = FAISS.from_documents(documents, self.embeddings)
         print("Vector store initialized.")
 
-    def retrieve_context(self, query: str, k: int = 5) -> str:
+    async def retrieve_context(self, query: str, k: int = 5) -> str:
         """
-        Retrieve the top k most relevant transactions for a given query.
+        Retrieve the top k most relevant transactions for a given query asynchronously.
         Returns a formatted string of the retrieved transactions.
         """
         if not self.vector_store:
             raise ValueError("Vector store not initialized.")
 
-        docs = self.vector_store.similarity_search(query, k=k)
+        # FAISS search is CPU-bound, so run it in a separate thread to avoid blocking the event loop
+        loop = asyncio.get_running_loop()
+        with ThreadPoolExecutor() as pool:
+            docs = await loop.run_in_executor(pool, lambda: self.vector_store.similarity_search(query, k=k))
         
         # Format the retrieved docs for the LLM
         context_parts = []

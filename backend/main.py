@@ -70,7 +70,8 @@ async def ask(payload: AskRequest = Body(...)):
     # Retrieve Context via RAG
     # ---------------------------
     # Uses vector search to find most relevant transactions
-    context = rag_system.retrieve_context(user_query)
+    # Using await for non-blocking execution
+    context = await rag_system.retrieve_context(user_query)
 
     # ---------------------------
     # OpenAI LLM Response with Streaming
@@ -79,9 +80,10 @@ async def ask(payload: AskRequest = Body(...)):
 
 Analyze the user's transaction data and provide detailed, actionable recommendations with:
 - **Specific numbers and calculations** based on their actual spending
-- **Structured breakdown** with clear categories using bullets or numbered lists
+- **Concise, structured breakdown** (use bullets)
 - **Practical, realistic suggestions** they can implement immediately
 - **Use emojis** for better readability (💡, 💰, 📊, etc.)
+- **ALWAYS use the Indian Rupee symbol (₹) for all currency values** (e.g., ₹500, ₹10,000)
 - **Format with markdown** (bold, bullets, numbered lists) - NEVER use markdown tables
 - Use bullet points with dashes or numbers instead of tables
 - Be encouraging and motivational
@@ -106,8 +108,8 @@ Provide a detailed, well-structured response with specific numbers, actionable s
                     {"role": "user", "content": user_message}
                 ],
                 stream=True,
-                temperature=0.8,
-                max_tokens=1500
+                temperature=0.7,
+                max_tokens=1000
             )
             
             for chunk_response in response:
