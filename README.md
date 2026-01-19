@@ -42,6 +42,42 @@ The AI is treated as a controlled system component, not a black box.
 
 ---
 
+
+## Retrieval-Augmented Generation (RAG) Architecture
+
+FinSight AI uses a **Retrieval-Augmented Generation (RAG)** approach to ensure
+accurate, data-grounded financial insights.
+
+### How RAG Works in FinSight AI
+
+1. User transaction data is converted into structured text records  
+   (date, category, amount, description)
+
+2. Each transaction is embedded using **OpenAI Embeddings**
+
+3. Embeddings are stored in a **FAISS vector index** on the backend
+
+4. When a user asks a question:
+   - The query is embedded
+   - Relevant transactions are retrieved using semantic similarity
+   - Retrieved data is injected into a controlled system prompt
+
+5. The AI model generates responses **only using retrieved data**
+   and streams results back to the frontend in real time
+
+### Why RAG?
+
+- Prevents hallucinations
+- Ensures responses are grounded in real transaction data
+- Enables scalable and explainable AI behavior
+- Keeps business logic fully backend-controlled
+
+The frontend never sends raw transaction data to the AI model.
+All retrieval and context construction happens securely on the backend.
+
+---
+
+
 ## Project Structure 
 
 ```text
@@ -63,9 +99,11 @@ docs/            # Architecture and setup documentation
 
 ### Backend
 - FastAPI (Python)
-- OpenAI (GPT-4o-mini)
+- OpenAI (GPT-4o-mini, Embeddings)
+- FAISS (Vector Similarity Search)
+- Retrieval-Augmented Generation (RAG)
 - Server-Sent Events (SSE)
-- Deployed on Render
+
 
 ---
 
@@ -94,5 +132,4 @@ This project was built as part of my AI engineering portfolio to demonstrate:
 
 This project is intended for educational and portfolio purposes.
 
-## Project Structure (High-Level)
 
